@@ -69,7 +69,7 @@ cargo build --release --locked
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\package.ps1
 ```
 
-成品位于 `dist/`，包括可执行文件、校验值和可解压安装的 ZIP。GitHub Actions 会在发布 `v*` 标签时执行测试、编译并打包发布。
+成品位于 `dist/`，包括可执行文件、校验值和可解压安装的 ZIP。GitHub Actions 会在发布 Release 时执行测试、编译并自动附上安装包。
 
 ## 卸载
 
