@@ -17,9 +17,9 @@ Both rows show **remaining** quota and its next reset in your computer's local t
 
 | Platform | Package | Installation |
 | --- | --- | --- |
-| Windows 10/11 x64 | `codex-usage-compact-v1.1.0-windows-x64.zip` | Extract and double-click `install.cmd` |
-| Apple Silicon Mac, macOS 13+ | `codex-usage-compact-v1.1.0-macos-arm64.zip` | Extract and double-click `Install.command` |
-| Intel Mac, macOS 13+ | `codex-usage-compact-v1.1.0-macos-x64.zip` | Extract and double-click `Install.command` |
+| Windows 10/11 x64 | [Download for Windows](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip) | Extract and double-click `install.cmd` |
+| Apple Silicon Mac, macOS 13+ | [Download for Apple Silicon Mac](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip) | Extract and double-click `Install.command` |
+| Intel Mac, macOS 13+ | [Download for Intel Mac](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip) | Extract and double-click `Install.command` |
 
 Sign in to Codex / ChatGPT on the same computer first. The installers enable startup at login. Windows installs into the current user's directory. Mac installs to `~/Applications/CodexVisual.app`, keeps existing preferences, and backs up existing apps to `~/Applications/CodexVisual-backups/`. If an old `/Applications` copy cannot be moved due to permissions, back it up and move it using Finder first.
 

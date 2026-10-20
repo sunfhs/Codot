@@ -17,9 +17,9 @@ Windows 任务栏 + macOS 菜单栏，一个项目、一个下载入口。两行
 
 | 平台 | 下载包 | 安装 |
 | --- | --- | --- |
-| Windows 10/11 x64 | `codex-usage-compact-v1.1.0-windows-x64.zip` | 解压后双击 `install.cmd` |
-| Mac（Apple Silicon）macOS 13+ | `codex-usage-compact-v1.1.0-macos-arm64.zip` | 解压后双击 `Install.command` |
-| Mac（Intel）macOS 13+ | `codex-usage-compact-v1.1.0-macos-x64.zip` | 解压后双击 `Install.command` |
+| Windows 10/11 x64 | [下载 Windows 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip) | 解压后双击 `install.cmd` |
+| Mac（Apple Silicon）macOS 13+ | [下载 Mac · Apple Silicon 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip) | 解压后双击 `Install.command` |
+| Mac（Intel）macOS 13+ | [下载 Mac · Intel 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip) | 解压后双击 `Install.command` |
 
 先在本机 Codex / ChatGPT 登录。安装后自动配置开机或登录启动。Windows 安装到当前用户目录；Mac 安装到 `~/Applications/CodexVisual.app`，保留原来的偏好设置。已有 Mac App 会备份到 `~/Applications/CodexVisual-backups/`；如果旧的 `/Applications` App 没有移动权限，请先通过 Finder 备份后移走。
 

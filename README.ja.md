@@ -17,9 +17,9 @@
 
 | 対応環境 | ダウンロード | インストール |
 | --- | --- | --- |
-| Windows 10/11 x64 | `codex-usage-compact-v1.1.0-windows-x64.zip` | 展開後 `install.cmd` をダブルクリック |
-| Apple Silicon Mac、macOS 13以降 | `codex-usage-compact-v1.1.0-macos-arm64.zip` | 展開後 `Install.command` をダブルクリック |
-| Intel Mac、macOS 13以降 | `codex-usage-compact-v1.1.0-macos-x64.zip` | 展開後 `Install.command` をダブルクリック |
+| Windows 10/11 x64 | [Windows 版をダウンロード](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip) | 展開後 `install.cmd` をダブルクリック |
+| Apple Silicon Mac、macOS 13以降 | [Mac · Apple Silicon 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip) | 展開後 `Install.command` をダブルクリック |
+| Intel Mac、macOS 13以降 | [Mac · Intel 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip) | 展開後 `Install.command` をダブルクリック |
 
 先に同じパソコンの Codex / ChatGPT でログインしてください。インストーラーはログイン時の自動起動を設定します。Windows は現在のユーザーのフォルダーに、Mac は `~/Applications/CodexVisual.app` にインストールします。Mac の既存設定は引き継ぎ、旧アプリは `~/Applications/CodexVisual-backups/` に保存します。古い `/Applications` のアプリを権限の関係で移動できない場合は、Finder でバックアップしてから移動してください。
 
