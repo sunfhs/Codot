@@ -1,6 +1,8 @@
 name: Release
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
 
@@ -11,7 +13,7 @@ env:
   RELEASE_ASSET_NAME: codex-usage.exe
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,13 +25,16 @@ jobs:
       - name: Build release binary
         run: |
           cargo test --release --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo build --release --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Prepare release assets
         shell: pwsh
         run: .\scripts\package.ps1
 
       - name: Create GitHub Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: |
@@ -41,4 +46,34 @@ jobs:
             dist/*.zip
             dist/*.zip.sha256
           generate_release_notes: true
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        working-directory: macos
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build macOS app
+        run: bash scripts/build_app.sh
+      - name: Test quota reading and multilingual menu
+        run: |
+          bash scripts/test_quota_reader.sh
+          bash scripts/test_menubar.sh
+      - name: Package macOS app
+        run: |
+          bash -n scripts/install.command scripts/package.sh
+          bash scripts/package.sh
+          codesign --verify --deep --strict build/CodexVisual.app
+      - name: Attach macOS downloads
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            macos/build/codex-usage-compact-*.zip
+            macos/build/codex-usage-compact-*.zip.sha256
 

@@ -8,7 +8,7 @@ if not defined APP_SHA256 (
   pause
   exit /b 1
 )
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0install.ps1" -SourcePath "%~dp0codex-usage.exe" -ExpectedSha256 "%APP_SHA256%" -Version "1.0.0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0install.ps1" -SourcePath "%~dp0codex-usage.exe" -ExpectedSha256 "%APP_SHA256%" -Version "1.1.0"
 if errorlevel 1 (
   echo Installation failed. See the message above.
   pause

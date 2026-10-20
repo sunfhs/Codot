@@ -28,7 +28,7 @@ foreach ($Helper in @('install.ps1', 'uninstall.ps1', 'install.cmd')) {
 foreach ($Asset in @('codex-usage.exe', 'codex-usage.exe.sha256', 'install.ps1', 'uninstall.ps1', 'install.cmd')) {
     Copy-Item -LiteralPath (Join-Path $DistDirectory $Asset) -Destination $BundleDirectory -Force
 }
-foreach ($Document in @('README.md', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md')) {
+foreach ($Document in @('README.md', 'README.en.md', 'README.ja.md', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md')) {
     Copy-Item -LiteralPath (Join-Path $ProjectRoot $Document) -Destination $BundleDirectory -Force
 }
 Copy-Item -LiteralPath (Join-Path $ProjectRoot 'docs') -Destination $BundleDirectory -Recurse -Force

@@ -133,7 +133,7 @@ try {
 
         $InstalledVersion = (Get-Item -LiteralPath $TargetPath).VersionInfo.ProductVersion
         if (-not $InstalledVersion) {
-            $InstalledVersion = if ($Version) { $Version.TrimStart('v') } else { '1.0.0' }
+            $InstalledVersion = if ($Version) { $Version.TrimStart('v') } else { '1.1.0' }
         }
 
         New-Item -Path $UninstallKey -Force | Out-Null

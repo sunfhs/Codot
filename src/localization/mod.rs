@@ -32,6 +32,26 @@ pub enum LanguageId {
 }
 
 impl LanguageId {
+    pub fn compact_quota(self) -> bool {
+        matches!(
+            self,
+            Self::SimplifiedChinese | Self::Japanese | Self::English
+        )
+    }
+
+    pub fn text(
+        self,
+        chinese: &'static str,
+        english: &'static str,
+        japanese: &'static str,
+    ) -> &'static str {
+        match self {
+            Self::SimplifiedChinese => chinese,
+            Self::Japanese => japanese,
+            _ => english,
+        }
+    }
+
     pub const ALL: [LanguageId; 11] = [
         LanguageId::English,
         LanguageId::Dutch,

@@ -664,6 +664,8 @@ fn claude_code_menu_label(
         strings.claude_code_model.to_string()
     } else if language == LanguageId::SimplifiedChinese {
         "Claude Code（需登录 CLI）".to_string()
+    } else if language == LanguageId::Japanese {
+        "Claude Code（CLI ログインが必要）".to_string()
     } else {
         "Claude Code (CLI login required)".to_string()
     }
@@ -803,6 +805,14 @@ fn append_quota_alert(
             format!(
                 "{window_label}额度仅剩 {remaining}%，重置时间：{}",
                 reset.unwrap_or_else(|| "未知".to_string())
+            ),
+        )
+    } else if language == LanguageId::Japanese {
+        (
+            format!("{provider_label} 残量の通知"),
+            format!(
+                "{window_label} の残りは {remaining}% です。回復：{}",
+                reset.unwrap_or_else(|| "不明".to_string())
             ),
         )
     } else {
@@ -1089,7 +1099,7 @@ fn effective_poll_interval(state: &AppState) -> u32 {
 
 fn refresh_usage_texts(state: &mut AppState) {
     let strings = state.language.strings();
-    let show_remaining = state.language == LanguageId::SimplifiedChinese;
+    let show_remaining = state.language.compact_quota();
     let Some(data) = state.data.as_ref() else {
         return;
     };
@@ -1667,7 +1677,7 @@ fn row_bar_segment_count(active_models: i32) -> i32 {
 fn usage_layout_samples(language: LanguageId) -> (Vec<&'static str>, Vec<String>) {
     let strings = language.strings();
     let labels = vec![strings.session_window, strings.weekly_window];
-    let resets = if language == LanguageId::SimplifiedChinese {
+    let resets = if language.compact_quota() {
         vec!["23:59 *".to_string(), "12/31 *".to_string()]
     } else {
         [
@@ -1712,7 +1722,7 @@ unsafe fn create_widget_font(appearance: Appearance) -> HFONT {
 /// fonts used for drawing so larger text and longer translations still fit.
 fn usage_layout_widths(language: LanguageId, appearance: Appearance) -> (i32, i32) {
     let reset_x = sc(quota_text::reset_offset(appearance.font_px()));
-    let fallback = if language == LanguageId::SimplifiedChinese {
+    let fallback = if language.compact_quota() {
         (
             sc(SIMPLIFIED_CHINESE_LABEL_WIDTH),
             sc(SIMPLIFIED_CHINESE_TEXT_WIDTH),
@@ -1763,7 +1773,7 @@ fn usage_layout_widths(language: LanguageId, appearance: Appearance) -> (i32, i3
 }
 
 fn usage_percent_for_display(language: LanguageId, used_percentage: f64) -> f64 {
-    if language == LanguageId::SimplifiedChinese {
+    if language.compact_quota() {
         poller::remaining_percentage(used_percentage)
     } else {
         used_percentage.clamp(0.0, 100.0)
@@ -2148,7 +2158,6 @@ fn update_quota_tooltips() {
         let Some(s) = state.as_ref() else { return };
         let mut regions = Vec::new();
         if !s.dragging {
-            let chinese = s.language == LanguageId::SimplifiedChinese;
             let count = active_model_count(s.show_claude_code, s.show_codex, s.show_antigravity);
             let (label_width, text_width) = usage_layout_widths(s.language, s.appearance);
             let width = model_usage_width(row_bar_segment_count(count), text_width);
@@ -2182,21 +2191,24 @@ fn update_quota_tooltips() {
                 if !visible {
                     continue;
                 }
-                let description =
-                    s.monitor.services[id].description(SystemTime::now(), Instant::now(), chinese);
+                let description = s.monitor.services[id].description(
+                    SystemTime::now(),
+                    Instant::now(),
+                    s.language,
+                );
                 let mut text = format!("{name}\n{description}");
                 if s.monitor.services[id].error.is_some() && session == "!" {
-                    text.push_str(if chinese {
-                        "\n本服务本次未返回额度。"
-                    } else {
-                        "\nThis provider did not return quota in the latest update."
-                    });
+                    text.push_str(s.language.text(
+                        "\n本服务本次未返回额度。",
+                        "\nThis provider did not return quota in the latest update.",
+                        "\n今回の更新では利用枠が返されませんでした。",
+                    ));
                 }
                 if name == "Codex" && s.monitor.services[id].data.is_some() {
                     for (missing, is_weekly) in [(session == "--", false), (weekly == "--", true)] {
                         if missing {
                             text.push('\n');
-                            text.push_str(quota_tooltip::message(chinese, is_weekly));
+                            text.push_str(quota_tooltip::message(s.language, is_weekly));
                         }
                     }
                 }
@@ -2606,34 +2618,10 @@ fn poll_error_display_label(error: poller::PollError, language: LanguageId) -> &
         poller::PollError::AuthRequired
         | poller::PollError::NoCredentials
         | poller::PollError::TokenExpired => "!",
-        poller::PollError::NetworkUnavailable => {
-            if language == LanguageId::SimplifiedChinese {
-                "网络"
-            } else {
-                "NET"
-            }
-        }
-        poller::PollError::RateLimited(_) => {
-            if language == LanguageId::SimplifiedChinese {
-                "限流"
-            } else {
-                "429"
-            }
-        }
-        poller::PollError::ServerError => {
-            if language == LanguageId::SimplifiedChinese {
-                "服务"
-            } else {
-                "5XX"
-            }
-        }
-        poller::PollError::RequestFailed => {
-            if language == LanguageId::SimplifiedChinese {
-                "错误"
-            } else {
-                "ERR"
-            }
-        }
+        poller::PollError::NetworkUnavailable => language.text("网络", "NET", "通信"),
+        poller::PollError::RateLimited(_) => language.text("限流", "429", "429"),
+        poller::PollError::ServerError => language.text("服务", "5XX", "5XX"),
+        poller::PollError::RequestFailed => language.text("错误", "ERR", "エラー"),
     }
 }
 
@@ -3866,12 +3854,11 @@ fn show_context_menu(hwnd: HWND) {
         }
 
         let adaptive = lock_state().as_ref().is_some_and(|s| s.adaptive_refresh);
-        let adaptive_label =
-            native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-                "剩余 ≤20% 时每分钟刷新"
-            } else {
-                "Refresh every minute when remaining ≤20%"
-            });
+        let adaptive_label = native_interop::wide_str(language.text(
+            "剩余 ≤20% 时每分钟刷新",
+            "Refresh every minute when remaining ≤20%",
+            "残り20%以下で毎分更新",
+        ));
         let _ = AppendMenuW(freq_menu, MF_SEPARATOR, 0, PCWSTR::null());
         let _ = AppendMenuW(
             freq_menu,
@@ -3946,11 +3933,7 @@ fn show_context_menu(hwnd: HWND) {
         // Usage window visibility submenu. Keep at least one window enabled.
         let usage_menu = CreatePopupMenu().unwrap();
         let session_label =
-            native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-                "5 小时额度"
-            } else {
-                "5-hour quota"
-            });
+            native_interop::wide_str(language.text("5 小时额度", "5-hour quota", "5時間の利用枠"));
         let session_flags = if show_session_window {
             MF_CHECKED
         } else {
@@ -3962,11 +3945,8 @@ fn show_context_menu(hwnd: HWND) {
             IDM_SHOW_SESSION_WINDOW as usize,
             PCWSTR::from_raw(session_label.as_ptr()),
         );
-        let weekly_label = native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-            "每周额度"
-        } else {
-            "Weekly quota"
-        });
+        let weekly_label =
+            native_interop::wide_str(language.text("每周额度", "Weekly quota", "週間の利用枠"));
         let weekly_flags = if show_weekly_window {
             MF_CHECKED
         } else {
@@ -3978,11 +3958,8 @@ fn show_context_menu(hwnd: HWND) {
             IDM_SHOW_WEEKLY_WINDOW as usize,
             PCWSTR::from_raw(weekly_label.as_ptr()),
         );
-        let usage_label = native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-            "显示用量"
-        } else {
-            "Usage display"
-        });
+        let usage_label =
+            native_interop::wide_str(language.text("显示用量", "Usage display", "利用枠の表示"));
         let _ = AppendMenuW(
             menu,
             MF_POPUP,
@@ -3990,27 +3967,22 @@ fn show_context_menu(hwnd: HWND) {
             PCWSTR::from_raw(usage_label.as_ptr()),
         );
 
-        let chinese = language == LanguageId::SimplifiedChinese;
         let appearance_menu = CreatePopupMenu().unwrap();
         append_appearance_choice(
             appearance_menu,
             IDM_APPEARANCE_RECOMMENDED,
             appearance == Appearance::translucent_dark_taskbar(),
-            if chinese {
-                "推荐：半透明深色任务栏"
-            } else {
-                "Recommended: translucent dark taskbar"
-            },
+            language.text(
+                "推荐：透明背景",
+                "Recommended: transparent background",
+                "推奨：透明な背景",
+            ),
         );
         append_appearance_choice(
             appearance_menu,
             IDM_APPEARANCE_RESET,
             appearance == Appearance::default(),
-            if chinese {
-                "恢复默认外观"
-            } else {
-                "Reset appearance"
-            },
+            language.text("恢复默认外观", "Reset appearance", "外観を初期設定に戻す"),
         );
         let _ = AppendMenuW(appearance_menu, MF_SEPARATOR, 0, PCWSTR::null());
         let palette_menu = CreatePopupMenu().unwrap();
@@ -4018,40 +3990,32 @@ fn show_context_menu(hwnd: HWND) {
             palette_menu,
             IDM_PALETTE_SYSTEM,
             appearance.palette == Palette::System,
-            if chinese {
-                "跟随系统"
-            } else {
-                "Follow system"
-            },
+            language.text("跟随系统", "Follow system", "システムに合わせる"),
         );
         append_appearance_choice(
             palette_menu,
             IDM_PALETTE_DARK,
             appearance.palette == Palette::HighContrastDark,
-            if chinese {
-                "高对比深色"
-            } else {
-                "High contrast dark"
-            },
+            language.text(
+                "高对比深色",
+                "High contrast dark",
+                "高コントラスト（ダーク）",
+            ),
         );
         append_appearance_choice(
             palette_menu,
             IDM_PALETTE_LIGHT,
             appearance.palette == Palette::HighContrastLight,
-            if chinese {
-                "高对比浅色"
-            } else {
-                "High contrast light"
-            },
+            language.text(
+                "高对比浅色",
+                "High contrast light",
+                "高コントラスト（ライト）",
+            ),
         );
         append_appearance_submenu(
             appearance_menu,
             palette_menu,
-            if chinese {
-                "文字与颜色"
-            } else {
-                "Text and colors"
-            },
+            language.text("文字与颜色", "Text and colors", "文字と色"),
         );
 
         let style_menu = CreatePopupMenu().unwrap();
@@ -4059,26 +4023,18 @@ fn show_context_menu(hwnd: HWND) {
             style_menu,
             IDM_BAR_CONTINUOUS,
             appearance.bar_style == BarStyle::Continuous,
-            if chinese {
-                "连续圆角"
-            } else {
-                "Continuous rounded"
-            },
+            language.text("连续圆角", "Continuous rounded", "連続・角丸"),
         );
         append_appearance_choice(
             style_menu,
             IDM_BAR_SEGMENTED,
             appearance.bar_style == BarStyle::Segmented,
-            if chinese { "分段" } else { "Segmented" },
+            language.text("分段", "Segmented", "分割"),
         );
         append_appearance_submenu(
             appearance_menu,
             style_menu,
-            if chinese {
-                "进度条样式"
-            } else {
-                "Bar style"
-            },
+            language.text("进度条样式", "Bar style", "バーの形"),
         );
 
         let thickness_menu = CreatePopupMenu().unwrap();
@@ -4086,22 +4042,18 @@ fn show_context_menu(hwnd: HWND) {
             thickness_menu,
             IDM_BAR_STANDARD,
             appearance.bar_thickness == BarThickness::Standard,
-            if chinese { "标准" } else { "Standard" },
+            language.text("标准", "Standard", "標準"),
         );
         append_appearance_choice(
             thickness_menu,
             IDM_BAR_SLIM,
             appearance.bar_thickness == BarThickness::Slim,
-            if chinese { "细" } else { "Slim" },
+            language.text("细", "Slim", "細い"),
         );
         append_appearance_submenu(
             appearance_menu,
             thickness_menu,
-            if chinese {
-                "进度条粗细"
-            } else {
-                "Bar thickness"
-            },
+            language.text("进度条粗细", "Bar thickness", "バーの太さ"),
         );
 
         let font_menu = CreatePopupMenu().unwrap();
@@ -4109,63 +4061,43 @@ fn show_context_menu(hwnd: HWND) {
             font_menu,
             IDM_FONT_STANDARD,
             appearance.font_size == FontSize::Standard,
-            if chinese { "标准" } else { "Standard" },
+            language.text("标准", "Standard", "標準"),
         );
         append_appearance_choice(
             font_menu,
             IDM_FONT_LARGE,
             appearance.font_size == FontSize::Large,
-            if chinese { "较大" } else { "Larger" },
+            language.text("较大", "Larger", "大"),
         );
         append_appearance_submenu(
             appearance_menu,
             font_menu,
-            if chinese { "文字大小" } else { "Text size" },
+            language.text("文字大小", "Text size", "文字サイズ"),
         );
         append_appearance_submenu(
             menu,
             appearance_menu,
-            if chinese { "外观" } else { "Appearance" },
+            language.text("外观", "Appearance", "外観"),
         );
 
         // Low-quota alert threshold submenu. Zero means opt-out.
         let alert_menu = CreatePopupMenu().unwrap();
         let alert_items = [
-            (
-                IDM_ALERT_OFF,
-                0u8,
-                if language == LanguageId::SimplifiedChinese {
-                    "关闭"
-                } else {
-                    "Off"
-                },
-            ),
+            (IDM_ALERT_OFF, 0u8, language.text("关闭", "Off", "オフ")),
             (
                 IDM_ALERT_10,
                 10u8,
-                if language == LanguageId::SimplifiedChinese {
-                    "剩余 10%"
-                } else {
-                    "10% remaining"
-                },
+                language.text("剩余 10%", "10% remaining", "残り10%"),
             ),
             (
                 IDM_ALERT_20,
                 20u8,
-                if language == LanguageId::SimplifiedChinese {
-                    "剩余 20%"
-                } else {
-                    "20% remaining"
-                },
+                language.text("剩余 20%", "20% remaining", "残り20%"),
             ),
             (
                 IDM_ALERT_30,
                 30u8,
-                if language == LanguageId::SimplifiedChinese {
-                    "剩余 30%"
-                } else {
-                    "30% remaining"
-                },
+                language.text("剩余 30%", "30% remaining", "残り30%"),
             ),
         ];
         for (id, threshold, label) in alert_items {
@@ -4182,11 +4114,8 @@ fn show_context_menu(hwnd: HWND) {
                 PCWSTR::from_raw(label.as_ptr()),
             );
         }
-        let alert_label = native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-            "额度提醒"
-        } else {
-            "Quota alerts"
-        });
+        let alert_label =
+            native_interop::wide_str(language.text("额度提醒", "Quota alerts", "残量の通知"));
         let _ = AppendMenuW(
             menu,
             MF_POPUP,
@@ -4211,11 +4140,11 @@ fn show_context_menu(hwnd: HWND) {
         );
 
         let anchored = lock_state().as_ref().is_some_and(|s| s.anchor_left);
-        let left_label = native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-            "固定在任务栏最左侧"
-        } else {
-            "Pin to the left edge of the taskbar"
-        });
+        let left_label = native_interop::wide_str(language.text(
+            "固定在任务栏最左侧",
+            "Pin to the left edge of the taskbar",
+            "タスクバーの左端に固定",
+        ));
         let _ = AppendMenuW(
             settings_menu,
             if anchored {
@@ -4246,6 +4175,8 @@ fn show_context_menu(hwnd: HWND) {
                     .unwrap_or_else(|| format!("{}", index + 1));
                 let label = if language == LanguageId::SimplifiedChinese {
                     format!("显示器 {} ({device})", index + 1)
+                } else if language == LanguageId::Japanese {
+                    format!("ディスプレイ {} ({device})", index + 1)
                 } else {
                     format!("Display {} ({device})", index + 1)
                 };
@@ -4262,11 +4193,8 @@ fn show_context_menu(hwnd: HWND) {
                     PCWSTR::from_raw(wide.as_ptr()),
                 );
             }
-            let label = native_interop::wide_str(if language == LanguageId::SimplifiedChinese {
-                "显示器"
-            } else {
-                "Display"
-            });
+            let label =
+                native_interop::wide_str(language.text("显示器", "Display", "ディスプレイ"));
             let _ = AppendMenuW(
                 settings_menu,
                 MF_POPUP,

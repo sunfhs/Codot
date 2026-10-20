@@ -25,14 +25,25 @@ static STATE: Mutex<State> = Mutex::new(State {
 // the standard tooltip control accepts these TOOLINFO structures.
 const TOOL_INFO_SIZE: u32 = std::mem::offset_of!(TTTOOLINFOW, lpReserved) as u32;
 
-pub fn message(chinese: bool, weekly: bool) -> &'static str {
-    match (chinese, weekly) {
-        (true, false) => "账号未提供 5 小时限额；-- 表示无该窗口的数据，并非剩余 100%。",
-        (true, true) => "账号未提供每周限额；-- 表示无该窗口的数据，并非剩余 100%。",
-        (false, false) => {
+pub fn message(language: crate::localization::LanguageId, weekly: bool) -> &'static str {
+    use crate::localization::LanguageId;
+    match (language, weekly) {
+        (LanguageId::Japanese, false) => {
+            "5時間の利用枠が返されていません。-- は未取得を表し、残り100%ではありません。"
+        }
+        (LanguageId::Japanese, true) => {
+            "週間の利用枠が返されていません。-- は未取得を表し、残り100%ではありません。"
+        }
+        (LanguageId::SimplifiedChinese, false) => {
+            "账号未提供 5 小时限额；-- 表示无该窗口的数据，并非剩余 100%。"
+        }
+        (LanguageId::SimplifiedChinese, true) => {
+            "账号未提供每周限额；-- 表示无该窗口的数据，并非剩余 100%。"
+        }
+        (_, false) => {
             "The account does not report a 5-hour quota. -- means unavailable, not 100% remaining."
         }
-        (false, true) => {
+        (_, true) => {
             "The account does not report a weekly quota. -- means unavailable, not 100% remaining."
         }
     }
@@ -167,8 +178,14 @@ mod tests {
             sync(
                 owner,
                 vec![
-                    (rect, message(true, false).into()),
-                    (rect, message(true, true).into()),
+                    (
+                        rect,
+                        message(crate::localization::LanguageId::SimplifiedChinese, false).into(),
+                    ),
+                    (
+                        rect,
+                        message(crate::localization::LanguageId::SimplifiedChinese, true).into(),
+                    ),
                 ],
             );
             let tooltip = HWND(STATE.lock().unwrap().window as *mut _);
@@ -176,7 +193,13 @@ mod tests {
                 SendMessageW(tooltip, TTM_GETTOOLCOUNT, WPARAM(0), LPARAM(0)).0,
                 2
             );
-            sync(owner, vec![(rect, message(false, false).into())]);
+            sync(
+                owner,
+                vec![(
+                    rect,
+                    message(crate::localization::LanguageId::English, false).into(),
+                )],
+            );
             assert_eq!(
                 SendMessageW(tooltip, TTM_GETTOOLCOUNT, WPARAM(0), LPARAM(0)).0,
                 1

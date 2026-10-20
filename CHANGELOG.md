@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0
+
+- Merge the macOS menu-bar app into macos/ while keeping the Windows taskbar app.
+- Add Japanese to macOS menus, messages, locale detection and saved preferences.
+- Keep remaining percentages and local reset timestamps consistent in Chinese, Japanese and English on Windows.
+- Add complete Chinese, Japanese and English project documentation.
+- Build Windows x64, macOS Apple Silicon and macOS Intel downloads in one release.
+- Add macOS login-start installation with backups; point Mac update checks to this project.
+
 ## 1.0.0 — 2026-10-20
 
 首次发布 Codex Usage Compact，基于 upstream-ray/codex-usage-monitor v1.10.0。

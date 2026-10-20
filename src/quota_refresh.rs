@@ -144,17 +144,19 @@ impl History {
     pub fn description(
         &self,
         now: SystemTime,
-        chinese: bool,
+        language: crate::localization::LanguageId,
         last_poll_ok: bool,
         interval_ms: u32,
     ) -> String {
+        let chinese = language == crate::localization::LanguageId::SimplifiedChinese;
         let Some(last) = self.last_success else {
-            return if chinese {
-                "等待首次成功更新。"
-            } else {
-                "Waiting for the first successful update."
-            }
-            .into();
+            return language
+                .text(
+                    "等待首次成功更新。",
+                    "Waiting for the first successful update.",
+                    "初回のデータ更新を待っています。",
+                )
+                .into();
         };
         let age = now.duration_since(last).unwrap_or_default().as_secs() / 60;
         let time = native_interop::system_time_to_local(last)
@@ -175,22 +177,27 @@ impl History {
             format!(
                 "数字表示剩余额度。\n上次成功更新：{time}（{age} 分钟前）\n当前刷新间隔：{cadence}。"
             )
+        } else if language == crate::localization::LanguageId::Japanese {
+            format!(
+                "数値は残りの利用枠です。\n最終更新：{time}（{age}分前）\n更新間隔：{}秒。",
+                interval_ms / 1000
+            )
         } else {
-            format!("Numbers indicate quota used.\nLast successful update: {time} ({age} min ago)\nCurrent refresh interval: {cadence}.")
+            format!("Numbers indicate remaining quota.\nLast successful update: {time} ({age} min ago)\nCurrent refresh interval: {cadence}.")
         };
         if !last_poll_ok {
-            result.push_str(if chinese {
-                "\n最近更新失败，正在等待重试或重新登录。"
-            } else {
-                "\nThe latest update failed; awaiting retry or sign-in."
-            });
+            result.push_str(language.text(
+                "\n最近更新失败，正在等待重试或重新登录。",
+                "\nThe latest update failed; awaiting retry or sign-in.",
+                "\n直近の更新に失敗しました。再試行または再ログインを待っています。",
+            ));
         }
         if self.is_stale(now) {
-            result.push_str(if chinese {
-                "\n* 数据已过期，请刷新确认。"
-            } else {
-                "\n* Data is stale; refresh to confirm."
-            });
+            result.push_str(language.text(
+                "\n* 数据已过期，请刷新确认。",
+                "\n* Data is stale; refresh to confirm.",
+                "\n* データが古くなっています。更新してください。",
+            ));
         }
         result
     }
@@ -320,7 +327,12 @@ mod tests {
     fn retry_tooltip_reports_seconds_instead_of_zero_minutes() {
         let mut history = History::default();
         history.record_success(SystemTime::now(), 60_000);
-        let text = history.description(SystemTime::now(), true, false, 30_000);
+        let text = history.description(
+            SystemTime::now(),
+            crate::localization::LanguageId::SimplifiedChinese,
+            false,
+            30_000,
+        );
         assert!(text.contains("30 秒"));
         assert!(!text.contains("0 分钟。"));
     }
