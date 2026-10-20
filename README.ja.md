@@ -1,6 +1,18 @@
-# Codex Usage Compact
-
-**[English](README.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md)**
+<p align="center">
+  <img src=".github/codex-usage-icon.png" width="112" height="112" alt="Codex Usage Compact app icon">
+</p>
+<h1 align="center">Codex Usage Compact</h1>
+<p align="center"><strong>Codex の残り利用枠と回復時刻を、ひと目で。</strong><br>Windows taskbar · macOS menu bar</p>
+<p align="center">
+  <a href="https://github.com/sunfhs/codex-usage-compact/releases/latest"><img src="https://img.shields.io/github/v/release/sunfhs/codex-usage-compact?style=flat-square" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-2878c8?style=flat-square" alt="Windows and macOS">
+</p>
+<p align="center">
+  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip">Windows 版</a> ·
+  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip">Mac · Apple Silicon</a> ·
+  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip">Mac · Intel</a>
+</p>
+<p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 
 **Windows のタスクバーと macOS のメニューバー**に Codex の利用枠を常時表示します。ソースコードとダウンロード先を一つにまとめました。
 
