@@ -1,5 +1,9 @@
 # Attribution
 
+Codex Usage Compact is an independent personal project maintained by sunfhs. Its platform implementations are derived from the upstream projects listed below; this repository does not claim that all code or artwork was created from scratch, or remove any upstream rights.
+
+## Windows component
+
 Codex Usage Compact is a visual customization of `upstream-ray/codex-usage-monitor` v1.10.0, based on commit `c2a53e7441b93015821c989f2ff07dfcd137476b`.
 
 Upstream: https://github.com/upstream-ray/codex-usage-monitor

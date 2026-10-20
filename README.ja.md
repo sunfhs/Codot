@@ -14,6 +14,8 @@
 </p>
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 
+[sunfhs](https://github.com/sunfhs) が独立してメンテナンスする個人プロジェクトです。Windows と macOS の実装は既存プロジェクトを基に調整しており、出典とライセンスの範囲は [NOTICE.md](NOTICE.md) に記載しています。
+
 **Windows のタスクバーと macOS のメニューバー**に Codex の利用枠を常時表示します。ソースコードとダウンロード先を一つにまとめました。
 
 ```text

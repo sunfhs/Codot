@@ -14,6 +14,8 @@
 </p>
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 
+An independent personal project maintained by [sunfhs](https://github.com/sunfhs). The Windows and macOS implementations adapt existing upstream projects; their credits and license scope are preserved in [NOTICE.md](NOTICE.md).
+
 Always-visible Codex quota in the **Windows taskbar** and **macOS menu bar**, maintained in one repository with one release page.
 
 ```text

@@ -14,6 +14,8 @@
 </p>
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 
+由 [sunfhs](https://github.com/sunfhs) 独立维护的个人项目。Windows 和 macOS 实现基于上游项目定制，来源署名与许可范围保留在 [NOTICE.md](NOTICE.md)。
+
 Windows 任务栏 + macOS 菜单栏，一个项目、一个下载入口。两行数据常驻显示：**5 小时 / 每周剩余额度，以及对应恢复时间**。
 
 ```text
