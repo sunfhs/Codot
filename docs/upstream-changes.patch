@@ -1,0 +1,122 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index b8a9c96..0fa32e5 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -50 +50 @@ name = "codex-usage"
+-version = "1.10.0"
++version = "1.0.0"
+diff --git a/Cargo.toml b/Cargo.toml
+index 379eba9..c085367 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -3 +3 @@ name = "codex-usage"
+-version = "1.10.0"
++version = "1.0.0"
+@@ -6,3 +6,3 @@ license = "MIT"
+-description = "Codex Usage"
+-homepage = "https://github.com/upstream-ray/codex-usage-monitor"
+-repository = "https://github.com/upstream-ray/codex-usage-monitor"
++description = "Compact transparent Windows taskbar monitor for Codex quota"
++homepage = "https://github.com/sunfhs/codex-usage-compact"
++repository = "https://github.com/sunfhs/codex-usage-compact"
+@@ -12 +12 @@ CompanyName = "Ray"
+-ProductName = "Codex Usage"
++ProductName = "Codex Usage Compact"
+diff --git a/scripts/install.ps1 b/scripts/install.ps1
+index db2c311..bf73b3e 100644
+--- a/scripts/install.ps1
++++ b/scripts/install.ps1
+@@ -14 +14 @@ $ProgressPreference = 'SilentlyContinue'
+-$Repository = 'upstream-ray/codex-usage-monitor'
++$Repository = 'sunfhs/codex-usage-compact'
+@@ -136 +136 @@ try {
+-            throw 'The installed executable does not contain a product version.'
++            $InstalledVersion = if ($Version) { $Version.TrimStart('v') } else { '1.0.0' }
+@@ -141 +141 @@ try {
+-        Set-ItemProperty -Path $UninstallKey -Name DisplayName -Value 'Codex Usage'
++        Set-ItemProperty -Path $UninstallKey -Name DisplayName -Value 'Codex Usage Compact'
+@@ -143 +143 @@ try {
+-        Set-ItemProperty -Path $UninstallKey -Name Publisher -Value 'Ray'
++        Set-ItemProperty -Path $UninstallKey -Name Publisher -Value 'sunfhs'
+@@ -152,3 +152 @@ try {
+-        if ($StartupWasEnabled) {
+-            Set-ItemProperty -Path $RunKey -Name 'CodexUsage' -Value $TargetPath
+-        }
++        Set-ItemProperty -Path $RunKey -Name 'CodexUsage' -Value ('"' + $TargetPath + '"')
+diff --git a/src/poller.rs b/src/poller.rs
+index 322494e..cdca10f 100644
+--- a/src/poller.rs
++++ b/src/poller.rs
+@@ -1626 +1626 @@ fn format_simplified_chinese_values(
+-                "{remaining:.0}%  {:02}:{:02}重置",
++                "{remaining:.0}%  {:02}:{:02}",
+@@ -1631 +1631 @@ fn format_simplified_chinese_values(
+-            format!("{remaining:.0}%  {:02}/{:02}重置", reset.wMonth, reset.wDay)
++            format!("{remaining:.0}%  {:02}/{:02}", reset.wMonth, reset.wDay)
+@@ -1879 +1879 @@ mod tests {
+-            "82%  18:30重置"
++            "82%  18:30"
+@@ -1888 +1888 @@ mod tests {
+-            "97%  07/17重置"
++            "97%  07/17"
+diff --git a/src/provider_icons.rs b/src/provider_icons.rs
+index 7ee4473..5f503a2 100644
+--- a/src/provider_icons.rs
++++ b/src/provider_icons.rs
+@@ -24 +24 @@ pub fn draw(hdc: HDC, x: i32, y: i32, size: i32, provider: Provider) {
+-    // These two handles live for the process lifetime. DrawIconEx scales the
++    // This handle lives for the process lifetime. DrawIconEx scales the
+@@ -27 +26,0 @@ pub fn draw(hdc: HDC, x: i32, y: i32, size: i32, provider: Provider) {
+-    static CODEX: OnceLock<isize> = OnceLock::new();
+@@ -30 +29 @@ pub fn draw(hdc: HDC, x: i32, y: i32, size: i32, provider: Provider) {
+-        Provider::Codex => (&CODEX, include_bytes!("icons/providers/openai.png")),
++        Provider::Codex => return,
+diff --git a/src/window.rs b/src/window.rs
+index edc1914..b2d0141 100644
+--- a/src/window.rs
++++ b/src/window.rs
+@@ -183 +183 @@ static CURRENT_DPI: AtomicU32 = AtomicU32::new(96);
+-/// Scale a base pixel value (designed at 96 DPI) to the current DPI.
++/// Scale the compact widget to half its original size at the current DPI.
+@@ -186 +186 @@ fn sc(px: i32) -> i32 {
+-    (px as f64 * dpi as f64 / 96.0).round() as i32
++    (px as f64 * dpi as f64 / 96.0 / 2.0).round() as i32
+@@ -376 +376 @@ enum FontSize {
+-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+@@ -384,0 +385,6 @@ struct Appearance {
++impl Default for Appearance {
++    fn default() -> Self {
++        Self::translucent_dark_taskbar()
++    }
++}
++
+@@ -472 +478 @@ impl Default for SettingsFile {
+-            language: None,
++            language: Some("zh-CN".to_string()),
+@@ -492 +498 @@ fn default_poll_interval() -> u32 {
+-    POLL_15_MIN
++    POLL_1_MIN
+@@ -1665 +1671 @@ fn usage_layout_samples(language: LanguageId) -> (Vec<&'static str>, Vec<String>
+-        vec!["23:59重置 *".to_string(), "12/31重置 *".to_string()]
++        vec!["23:59 *".to_string(), "12/31 *".to_string()]
+@@ -2214 +2220 @@ fn update_quota_tooltips() {
+-/// Render opaque taskbar content with ClearType via UpdateLayeredWindow.
++/// Render taskbar content with a transparent background via UpdateLayeredWindow.
+@@ -2365,2 +2371 @@ fn render_layered() {
+-        // System mode blends with the taskbar. High contrast modes use a solid
+-        // backdrop, so text stays legible even over translucent wallpapers.
++        // Leave the taskbar visible between the foreground elements.
+@@ -2368,5 +2372,0 @@ fn render_layered() {
+-        let bg_alpha = if appearance.palette == Palette::System {
+-            1u32
+-        } else {
+-            255u32
+-        };
+@@ -2377 +2377 @@ fn render_layered() {
+-                *px = (bg_alpha << 24) | if bg_alpha == 1 { 0 } else { rgb };
++                *px = 0;
+@@ -3028,2 +3028 @@ fn compute_anchor_y(anchor_top: i32, anchor_height: i32, widget_height: i32) ->
+-    let anchor_bottom = anchor_top + anchor_height;
+-    (anchor_bottom - widget_height).max(anchor_top)
++    anchor_top + (anchor_height - widget_height).max(0) / 2
