@@ -1,3 +1,7 @@
+> 此文件保留合并前在原 Mac 上的安装与验证记录。1.1.0 的当前安装步骤以根目录三语言 README 为准，源码历史与原版备份仍在旧仓库。
+> Historical record from the original Mac; use the root README for v1.1.0 instructions.
+> 統合前の Mac の記録です。現行の手順はルートの README を参照してください。
+
 # 本机 Codex 额度监控
 
 安装位置：`/Applications/CodexVisual.app`。

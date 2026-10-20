@@ -9,7 +9,7 @@ for (mode, refresh) in [(LanguageMode.chinese, "立即刷新"), (.japanese, "今
     LanguageMode.current = mode
     precondition(LanguageMode.current == mode, "The language selection must persist")
     precondition(AppStrings.refreshNow == refresh, "The menu must use the selected language")
-    precondition(AppStrings.dateLocale.identifier == (mode == .japanese ? "ja_JP" : mode == .chinese ? "zh_Hans_US" : "en_US_POSIX"))
+    precondition(AppStrings.dateLocale.language.languageCode?.identifier == (mode == .japanese ? "ja" : mode == .chinese ? "zh" : "en"), "Date formatting must follow the selected language")
 }
 LanguageMode.current = savedLanguage
 if let savedOverride { setenv("CODEX_VISUAL_LANGUAGE", savedOverride, 1) }

@@ -18,7 +18,7 @@ for previous in "$APP" /Applications/CodexVisual.app; do
     mv "$previous" "$BACKUP/CodexVisual.app"
   fi
 done
-ditto "$SOURCE" "$APP"
+ditto --norsrc --noextattr "$SOURCE" "$APP"
 defaults write com.orangeshushu.CodexVisual refreshMode -string everySixtySeconds
 defaults write com.orangeshushu.CodexVisual menuBarDisplayMode -string bars
 /usr/libexec/PlistBuddy -c "Add :Label string com.orangeshushu.CodexVisual" /dev/null >/dev/null 2>&1 || true
