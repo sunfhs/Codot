@@ -1,16 +1,16 @@
 <p align="center">
-  <img src=".github/codex-usage-icon.png" width="112" height="112" alt="Codex Usage Compact app icon">
+  <img src=".github/codex-usage-icon.png" width="112" height="112" alt="Codot app icon">
 </p>
-<h1 align="center">Codex Usage Compact</h1>
+<h1 align="center">Codot</h1>
 <p align="center"><strong>Codex の残り利用枠と回復時刻を、ひと目で。</strong><br>Windows taskbar · macOS menu bar</p>
 <p align="center">
-  <a href="https://github.com/sunfhs/codex-usage-compact/releases/latest"><img src="https://img.shields.io/github/v/release/sunfhs/codex-usage-compact?style=flat-square" alt="Latest release"></a>
+  <a href="https://github.com/sunfhs/codot/releases/latest"><img src="https://img.shields.io/github/v/release/sunfhs/codot?style=flat-square" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-2878c8?style=flat-square" alt="Windows and macOS">
 </p>
 <p align="center">
-  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip">Windows 版</a> ·
-  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip">Mac · Apple Silicon</a> ·
-  <a href="https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip">Mac · Intel</a>
+  <a href="https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip">Windows 版</a> ·
+  <a href="https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip">Mac · Apple Silicon</a> ·
+  <a href="https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip">Mac · Intel</a>
 </p>
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">中文</a> · <a href="README.ja.md">日本語</a></p>
 
@@ -27,13 +27,13 @@
 
 ## ダウンロードとインストール
 
-[最新版 — 全プラットフォーム](https://github.com/sunfhs/codex-usage-compact/releases/latest)
+[最新版 — 全プラットフォーム](https://github.com/sunfhs/codot/releases/latest)
 
 | 対応環境 | ダウンロード | インストール |
 | --- | --- | --- |
-| Windows 10/11 x64 | [Windows 版をダウンロード](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip) | 展開後 `install.cmd` をダブルクリック |
-| Apple Silicon Mac、macOS 13以降 | [Mac · Apple Silicon 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip) | 展開後 `Install.command` をダブルクリック |
-| Intel Mac、macOS 13以降 | [Mac · Intel 版](https://github.com/sunfhs/codex-usage-compact/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip) | 展開後 `Install.command` をダブルクリック |
+| Windows 10/11 x64 | [Windows 版をダウンロード](https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-windows-x64.zip) | 展開後 `install.cmd` をダブルクリック |
+| Apple Silicon Mac、macOS 13以降 | [Mac · Apple Silicon 版](https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-arm64.zip) | 展開後 `Install.command` をダブルクリック |
+| Intel Mac、macOS 13以降 | [Mac · Intel 版](https://github.com/sunfhs/codot/releases/download/v1.1.0/codex-usage-compact-v1.1.0-macos-x64.zip) | 展開後 `Install.command` をダブルクリック |
 
 先に同じパソコンの Codex / ChatGPT でログインしてください。インストーラーはログイン時の自動起動を設定します。Windows は現在のユーザーのフォルダーに、Mac は `~/Applications/CodexVisual.app` にインストールします。Mac の既存設定は引き継ぎ、旧アプリは `~/Applications/CodexVisual-backups/` に保存します。古い `/Applications` のアプリを権限の関係で移動できない場合は、Finder でバックアップしてから移動してください。
 

@@ -4,8 +4,8 @@ version = "1.1.0"
 edition = "2021"
 license = "MIT"
 description = "Compact transparent Windows taskbar monitor for Codex quota"
-homepage = "https://github.com/sunfhs/codex-usage-compact"
-repository = "https://github.com/sunfhs/codex-usage-compact"
+homepage = "https://github.com/sunfhs/codot"
+repository = "https://github.com/sunfhs/codot"
 
 [package.metadata.winres]
 CompanyName = "Ray"
