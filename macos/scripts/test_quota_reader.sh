@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export CODEX_VISUAL_LANGUAGE=en
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP_BINARY="$ROOT_DIR/build/CodexVisual.app/Contents/MacOS/CodexVisual"
@@ -85,48 +86,48 @@ account_output="$({
   "$APP_BINARY" --print
 })"
 
-if ! rg -q '^weekly_remaining=58$' <<< "$latest_output"; then
+if ! grep -Eq '^weekly_remaining=58$' <<< "$latest_output"; then
   echo "Expected newest primary Codex quota to report 58% remaining." >&2
   echo "$latest_output" >&2
   exit 1
 fi
 
-if ! rg -q '^weekly_remaining=100$' <<< "$zero_output"; then
+if ! grep -Eq '^weekly_remaining=100$' <<< "$zero_output"; then
   echo "Expected a freshly reset primary Codex quota to report 100% remaining." >&2
   echo "$zero_output" >&2
   exit 1
 fi
 
-if ! rg -q '^weekly_remaining=96$' <<< "$account_output"; then
+if ! grep -Eq '^weekly_remaining=96$' <<< "$account_output"; then
   echo "Expected the current Codex account response to override stale session data." >&2
   echo "$account_output" >&2
   exit 1
 fi
 
-if ! rg -q '^source=(Codex account|当前账号)$' <<< "$account_output"; then
+if ! grep -Eq '^source=(Codex account|当前账号)$' <<< "$account_output"; then
   echo "Expected the authoritative account source to be reported." >&2
   echo "$account_output" >&2
   exit 1
 fi
 
-if ! rg -q '^historical=false$' <<< "$account_output" ||
-   ! rg -q '^historical=true$' <<< "$plus_output" ||
-   ! rg -q '^data_updated=2099-01-05T00:00:00Z$' <<< "$plus_output"; then
+if ! grep -Eq '^historical=false$' <<< "$account_output" ||
+   ! grep -Eq '^historical=true$' <<< "$plus_output" ||
+   ! grep -Eq '^data_updated=2099-01-05T00:00:00Z$' <<< "$plus_output"; then
   echo "Expected log fallbacks to preserve the quota event timestamp and historical label." >&2
   exit 1
 fi
 
-if ! rg -q '^weekly_remaining=63$' <<< "$plus_output" ||
-   ! rg -q '^five_hour_visible=true$' <<< "$plus_output" ||
-   ! rg -q '^five_hour_remaining=79$' <<< "$plus_output"; then
+if ! grep -Eq '^weekly_remaining=63$' <<< "$plus_output" ||
+   ! grep -Eq '^five_hour_visible=true$' <<< "$plus_output" ||
+   ! grep -Eq '^five_hour_remaining=79$' <<< "$plus_output"; then
   echo "Expected Plus to expose both the five-hour and weekly quotas." >&2
   echo "$plus_output" >&2
   exit 1
 fi
 
-if ! rg -q '^weekly_remaining=63$' <<< "$pro_output" ||
-   ! rg -q '^five_hour_visible=true$' <<< "$pro_output" ||
-   ! rg -q '^five_hour_remaining=79$' <<< "$pro_output"; then
+if ! grep -Eq '^weekly_remaining=63$' <<< "$pro_output" ||
+   ! grep -Eq '^five_hour_visible=true$' <<< "$pro_output" ||
+   ! grep -Eq '^five_hour_remaining=79$' <<< "$pro_output"; then
   echo "Expected every returned quota window to remain visible, including Pro." >&2
   echo "$pro_output" >&2
   exit 1
@@ -142,15 +143,15 @@ check_account() {
   output="$(CODEX_VISUAL_ACCOUNT_RESPONSE_FILE="$fixture" \
     CODEX_VISUAL_SESSIONS_DIR="$TEST_DIR/latest-events" \
     CODEX_VISUAL_LOG_DB="$TEST_DIR/missing.sqlite" "$APP_BINARY" --print)"
-  if ! rg -q '^weekly_remaining=63$' <<< "$output" ||
-     ! rg -q "^five_hour_visible=$expected_five_hour$" <<< "$output" ||
-     ! rg -q '^source=(Codex account|当前账号)$' <<< "$output"; then
+  if ! grep -Eq '^weekly_remaining=63$' <<< "$output" ||
+     ! grep -Eq "^five_hour_visible=$expected_five_hour$" <<< "$output" ||
+     ! grep -Eq '^source=(Codex account|当前账号)$' <<< "$output"; then
     echo "Unexpected account window selection for $fixture: $output" >&2
     exit 1
   fi
   if [[ "$expected_five_hour" == true ]] &&
-     { ! rg -q '^five_hour_remaining=79$' <<< "$output" ||
-       ! rg -q '^five_hour_reset=2100-01-01 00:00:00 \+0000$' <<< "$output"; }; then
+     { ! grep -Eq '^five_hour_remaining=79$' <<< "$output" ||
+       ! grep -Eq '^five_hour_reset=2100-01-01 00:00:00 \+0000$' <<< "$output"; }; then
     echo "Five-hour percentage or reset came from the wrong window: $output" >&2
     exit 1
   fi
@@ -176,9 +177,9 @@ for transform in '.result.rateLimitsByLimitId.codex.secondary = null' \
     CODEX_VISUAL_ACCOUNT_RESPONSE_FILE="$TEST_DIR/not-weekly.json" \
     CODEX_VISUAL_SESSIONS_DIR="$TEST_DIR/latest-events" \
     CODEX_VISUAL_LOG_DB="$TEST_DIR/missing.sqlite" "$APP_BINARY" --print)"
-  if ! rg -q '^weekly_remaining=--$' <<< "$rejected_output" ||
-     ! rg -q '^five_hour_remaining=79$' <<< "$rejected_output" ||
-     ! rg -q '^source=(Codex account|当前账号)$' <<< "$rejected_output"; then
+  if ! grep -Eq '^weekly_remaining=--$' <<< "$rejected_output" ||
+     ! grep -Eq '^five_hour_remaining=79$' <<< "$rejected_output" ||
+     ! grep -Eq '^source=(Codex account|当前账号)$' <<< "$rejected_output"; then
     echo "A missing weekly window must remain missing without substituting historical data: $rejected_output" >&2
     exit 1
   fi

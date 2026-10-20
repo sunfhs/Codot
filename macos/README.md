@@ -1,3 +1,7 @@
+> 历史说明 / Historical notes / 過去の説明
+>
+> 本版已合入统一项目，请使用根目录的 [中文](../README.md)、[日本語](../README.ja.md)、[English](../README.en.md) 安装与构建说明。下文为合并前的 Mac 安装记录，旧发布链接与更新行为不适用于 1.1.0。
+
 # Codex Quota Menu Bar · macOS 定制版
 
 基于 [orangeshushu/CodexVisual](https://github.com/orangeshushu/CodexVisual) 的个人 Mac 定制版，保留原项目源码和提交历史。[原版说明](README.upstream.md)

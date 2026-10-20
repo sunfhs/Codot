@@ -47,6 +47,18 @@ jobs:
             dist/*.zip.sha256
           generate_release_notes: true
 
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: windows-downloads
+          path: |
+            dist/*.exe
+            dist/*.cmd
+            dist/*.ps1
+            dist/*.sha256
+            dist/*.zip
+          if-no-files-found: error
+
   macos:
     strategy:
       fail-fast: false
@@ -76,4 +88,30 @@ jobs:
           files: |
             macos/build/codex-usage-compact-*.zip
             macos/build/codex-usage-compact-*.zip.sha256
+
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: macos-${{ matrix.runner }}-downloads
+          path: |
+            macos/build/codex-usage-compact-*.zip
+            macos/build/codex-usage-compact-*.zip.sha256
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Release v')
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: downloads
+          merge-multiple: true
+      - name: Publish the verified packages together
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -n 1)
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION — Windows + macOS · 中文 / 日本語 / English" --notes-file docs/release-notes.md downloads/*.exe downloads/*.cmd downloads/*.ps1 downloads/*.sha256 downloads/*.zip
 
