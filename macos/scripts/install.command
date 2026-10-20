@@ -21,7 +21,6 @@ done
 ditto --norsrc --noextattr "$SOURCE" "$APP"
 defaults write com.orangeshushu.CodexVisual refreshMode -string everySixtySeconds
 defaults write com.orangeshushu.CodexVisual menuBarDisplayMode -string bars
-/usr/libexec/PlistBuddy -c "Add :Label string com.orangeshushu.CodexVisual" /dev/null >/dev/null 2>&1 || true
 cat > "$AGENT" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
