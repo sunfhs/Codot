@@ -1,6 +1,6 @@
 # Codex Usage Compact
 
-**[中文](README.md) · [日本語](README.ja.md) · [English](README.en.md)**
+**[English](README.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md)**
 
 Always-visible Codex quota in the **Windows taskbar** and **macOS menu bar**, maintained in one repository with one release page.
 

@@ -1,6 +1,6 @@
 # Codex Usage Compact
 
-**[中文](README.md) · [日本語](README.ja.md) · [English](README.en.md)**
+**[English](README.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md)**
 
 **Windows のタスクバーと macOS のメニューバー**に Codex の利用枠を常時表示します。ソースコードとダウンロード先を一つにまとめました。
 
