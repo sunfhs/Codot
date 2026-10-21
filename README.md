@@ -25,10 +25,6 @@ Always-visible Codex quota in the **Windows taskbar** and **macOS menu bar**, ma
 
 Both rows show **remaining** quota and its next reset in your computer's local time: `HH:mm` for the five-hour window, `MM/dd` for the weekly window. These values are examples; the app reads your own signed-in account. Quotas reset on the service's schedule; this app displays them.
 
-![macOS menu bar with two always-visible quota rows](docs/images/macos-menu-bar.png)
-
-*Captured from the running macOS app. Quota values reflect the time of capture.*
-
 ## Download and install
 
 [Latest release — all platforms](https://github.com/sunfhs/codot/releases/latest)
@@ -52,7 +48,15 @@ SHA-256 checksum files accompany the downloads. Windows binaries are unsigned. M
 - Switching between these languages preserves remaining percentages and absolute local reset times.
 - Mac's **Check for Updates** opens this project's release page for manual installation, preserving this customization.
 
+### Windows
+
 ![Windows taskbar photo](docs/images/half-size-centered.png)
+
+### macOS
+
+![macOS menu bar with two always-visible quota rows](docs/images/macos-menu-bar.png)
+
+*Captured from the running macOS app. Quota values reflect the time of capture.*
 
 ## Build and verify
 
