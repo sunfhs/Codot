@@ -25,6 +25,10 @@ Windows 任务栏 + macOS 菜单栏，一个项目、一个下载入口。两行
 
 百分比表示剩余；时间按电脑本地时区显示，分别为 `HH:mm` 和 `MM/dd`。这只是排版示例，实际额度读取你本机已登录的账号。工具只显示额度，额度由服务端按时间恢复。
 
+![macOS 菜单栏双行额度常驻显示](docs/images/macos-menu-bar.png)
+
+*Mac 实际运行截图，额度数值为截图时的数据。*
+
 ## 下载与安装
 
 [最新发布版 / 所有平台下载](https://github.com/sunfhs/codot/releases/latest)
